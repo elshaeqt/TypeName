@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>How Attractive Are You? 😳</title>
+<style>
+*{box-sizing:border-box}
+body{
+  margin:0;min-height:100vh;overflow-x:hidden;
+  display:flex;align-items:center;justify-content:center;
+  font-family:Arial,sans-serif;
+  background:linear-gradient(135deg,#ffe4f1,#eee6ff);
+  color:#19151d;
+}
+.card{
+  width:min(92%,520px);margin:24px auto;padding:32px 22px;
+  background:rgba(255,255,255,.82);backdrop-filter:blur(18px);
+  border:1px solid white;border-radius:28px;
+  box-shadow:0 25px 70px rgba(70,30,80,.18);
+  text-align:center;
+}
+.heart{font-size:64px;animation:beat .9s infinite}
+h1{
+  margin:8px 0;font-size:clamp(32px,8vw,52px);
+  background:linear-gradient(90deg,#ff3f96,#8b5cf6);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.sub{color:#777;line-height:1.5;margin:10px auto 24px}
+input{
+  width:100%;padding:16px;border:2px solid #f1d8e7;
+  border-radius:15px;font-size:18px;text-align:center;outline:none;
+}
+input:focus{border-color:#ff65a9;box-shadow:0 0 0 5px rgba(255,80,160,.1)}
+button{
+  border:0;border-radius:15px;padding:15px 25px;margin-top:14px;
+  background:linear-gradient(135deg,#ff4fa3,#8b5cf6);
+  color:white;font-size:17px;font-weight:900;cursor:pointer;
+  min-height:50px;box-shadow:0 10px 25px rgba(139,92,246,.25);
+}
+.hidden{display:none!important}
+.percent{
+  font-size:clamp(65px,18vw,110px);font-weight:1000;
+  color:#ff3f96;line-height:1;margin:20px 0;
+  text-shadow:4px 4px #ffe0ef;
+}
+.bar{height:18px;background:#f1e5ee;border-radius:99px;overflow:hidden}
+.fill{
+  height:100%;width:0;border-radius:99px;
+  background:linear-gradient(90deg,#ff4fa3,#8b5cf6);
+  transition:width .12s;
+}
+.status{margin-top:16px;color:#777;font-weight:700}
+.result{animation:reveal .8s cubic-bezier(.15,1.5,.35,1)}
+.result .name{font-size:clamp(32px,9vw,65px);font-weight:1000;color:#ff3f96}
+.bantot{
+  margin-top:10px;font-size:clamp(30px,8vw,58px);
+  font-weight:1000;line-height:1.05;
+  animation:shake .55s infinite;
+}
+.emojis{font-size:48px;margin:16px 0}
+.error{height:20px;color:#d52c62;font-size:14px;margin-top:8px;font-weight:bold}
+.particle{
+  position:fixed;z-index:5;pointer-events:none;font-size:28px;
+  animation:explode 2s ease-out forwards;
+}
+@keyframes beat{50%{transform:scale(1.16)}}
+@keyframes reveal{0%{opacity:0;transform:scale(.15) rotate(-10deg)}70%{transform:scale(1.08) rotate(2deg)}100%{opacity:1;transform:none}}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-7px) rotate(-1deg)}75%{transform:translateX(7px) rotate(1deg)}}
+@keyframes explode{0%{left:50%;top:50%;opacity:1;transform:scale(.4) rotate(0)}100%{left:calc(50% + var(--x));top:calc(50% + var(--y));opacity:0;transform:scale(1.5) rotate(720deg)}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<div class="card">
+  <section id="start">
+    <div class="heart">💖</div>
+    <h1>How Attractive Are You?</h1>
+    <div class="sub">
+      Find out your attractiveness score.<br>
+      This test is <strong>100% scientifically accurate</strong>. 😌
+    </div>
+
+    <form id="form">
+      <input id="name" maxlength="40" autocomplete="off"
+             placeholder="Enter your name..." aria-label="Your name">
+      <div id="error" class="error"></div>
+      <button type="submit">Calculate My Score ✨</button>
+    </form>
+  </section>
+
+  <section id="test" class="hidden">
+    <div style="font-size:48px">🔬</div>
+    <h2 id="title">Analyzing...</h2>
+    <div class="percent" id="percent">0%</div>
+    <div class="bar"><div class="fill" id="fill"></div></div>
+    <div class="status" id="status">Scanning beauty levels...</div>
+  </section>
+
+  <section id="result" class="hidden result">
+    <div style="font-size:14px;color:#888;font-weight:800">
+      ✨ OFFICIAL ATTRACTIVENESS RESULT ✨
+    </div>
+    <div class="name" id="shownName"></div>
+    <div class="percent" style="margin:14px 0 4px">100%</div>
+    <div class="bantot">100% LEGIT MABANTOT 💩💨</div>
+    <div class="emojis">😭💀😂💨</div>
+    <button id="again" type="button">Test Someone Else 😂</button>
+  </section>
+</div>
+
+<script>
+(() => {
+  const form=document.getElementById("form");
+  const nameInput=document.getElementById("name");
+  const error=document.getElementById("error");
+  const start=document.getElementById("start");
+  const test=document.getElementById("test");
+  const result=document.getElementById("result");
+  const percent=document.getElementById("percent");
+  const fill=document.getElementById("fill");
+  const status=document.getElementById("status");
+  const shownName=document.getElementById("shownName");
+  const again=document.getElementById("again");
+
+  const milestones = [
+    [12, "Hmm... you seem kinda attractive 👀"],
+    [34, "Okay wait... there's something there 😳"],
+    [56, "Getting prettier... ✨"],
+    [72, "WAIT, you're actually attractive 🔥"],
+    [89, "Okayyy, we're impressed 😍"],
+    [96, "Almost perfect... 👀"],
+    [99, "ONE MORE SECOND... 😳"],
+    [100, "FINAL RESULT..."]
+  ];
+
+  function explode(){
+    const icons=["💩","💨","😂","😭","💀","🤣","✨"];
+    for(let i=0;i<45;i++){
+      const p=document.createElement("span");
+      p.className="particle";
+      p.textContent=icons[Math.floor(Math.random()*icons.length)];
+      p.style.setProperty("--x",`${Math.round(Math.random()*900-450)}px`);
+      p.style.setProperty("--y",`${Math.round(Math.random()*700-350)}px`);
+      document.body.appendChild(p);
+      setTimeout(()=>p.remove(),2100);
+    }
+  }
+
+  form.addEventListener("submit",e=>{
+    e.preventDefault();
+    const name=nameInput.value.trim().replace(/\s+/g," ");
+
+    if(!name){
+      error.textContent="Uy, pangalan muna 😂";
+      nameInput.focus();
+      return;
+    }
+
+    error.textContent="";
+    start.classList.add("hidden");
+    test.classList.remove("hidden");
+
+    let value=0;
+    let milestoneIndex=0;
+
+    const timer=setInterval(()=>{
+      const target = milestones[milestoneIndex][0];
+      const remaining = target - value;
+      value = Math.min(target, value + Math.max(1, Math.ceil(remaining / 7)));
+
+      percent.textContent=value+"%";
+      fill.style.width=value+"%";
+      status.textContent=milestones[milestoneIndex][1];
+
+      if(value>=target){
+        milestoneIndex++;
+
+        if(milestoneIndex>=milestones.length){
+          clearInterval(timer);
+          setTimeout(()=>{
+            test.classList.add("hidden");
+            shownName.textContent=name.toUpperCase();
+            result.classList.remove("hidden");
+            explode();
+          },900);
+        }
+      }
+    },420);
+  });
+
+  again.addEventListener("click",()=>{
+    result.classList.add("hidden");
+    start.classList.remove("hidden");
+    nameInput.value="";
+    nameInput.focus();
+  });
+})();
+</script>
+</body>
+</html>
